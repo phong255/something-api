@@ -24,17 +24,21 @@ public class UserDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> roleName = null;
+        List<SimpleGrantedAuthority> roleNames = new ArrayList<>();
         for(Role r : roles){
-            roleName.add(new SimpleGrantedAuthority(r.getRole_name()));
+            roleNames.add(new SimpleGrantedAuthority(r.getRole_name()));
         }
-        return roleName;
+        return roleNames;
     }
 
     public void setUser(User user){
         this.id = user.getUserID();
         this.username = user.getUsername();
         this.password = user.getPassword();
+    }
+
+    public User getUser(){
+        return new User(this.id,this.username,this.password);
     }
 
     @Override
