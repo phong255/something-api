@@ -1,5 +1,7 @@
 package dev.lhphong.somethingapi.Services.Impl;
 
+import dev.lhphong.somethingapi.Config.Constant.MessageCode;
+import dev.lhphong.somethingapi.Config.exception.CustomException;
 import dev.lhphong.somethingapi.Dto.UserDto;
 import dev.lhphong.somethingapi.Models.Role;
 import dev.lhphong.somethingapi.Models.User;
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +60,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto signUp(User user_form) {
+        User userDB = userRepo.getUserByUsername(user_form.getUsername());
+        if(userDB != null){
+            throw new CustomException(MessageCode.USER_EXIST);
+        }
         UserDto userDto = new UserDto();
         //------ save user info ---------
         User user = userRepo.save(new User(null,user_form.getUsername(),passwordEncoder.encode(user_form.getPassword())));
@@ -76,7 +81,7 @@ public class UserServiceImpl implements UserService {
         UserDto userDto;
         User user_save = userRepo.getUserByUsername(user.getUsername());
         if(user_save == null || !passwordEncoder.matches(user.getPassword(),user_save.getPassword())){
-            return new UserDto();
+            throw new CustomException(MessageCode.USER_NOT_FOUND);
         }
         else{
             userDto = new UserDto();

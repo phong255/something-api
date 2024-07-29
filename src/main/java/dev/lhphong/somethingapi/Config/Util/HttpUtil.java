@@ -2,10 +2,11 @@ package dev.lhphong.somethingapi.Config.Util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
+@Data
 public class HttpUtil {
     private String value;
 
@@ -24,7 +25,11 @@ public class HttpUtil {
         return new ObjectMapper().readValue(value.getBytes(),tClass);
     }
 
-    public static String toString(Object obj) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(obj);
+    public static String toString(Object obj){
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
